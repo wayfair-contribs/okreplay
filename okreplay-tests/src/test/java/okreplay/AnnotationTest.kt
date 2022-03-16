@@ -5,6 +5,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okreplay.Headers.VIA_HEADER
+import okreplay.Headers.XHeader.HEADER_PLAY
+import okreplay.Headers.XHeader.HEADER_REC
 import org.codehaus.groovy.runtime.ResourceGroovyMethods
 import org.junit.AfterClass
 import org.junit.Assert
@@ -56,8 +59,8 @@ class AnnotationTest {
         val request: Request = Request.Builder().url(endpoint.url("/")).build()
         val response = client.newCall(request).execute()
         Assert.assertEquals(HttpURLConnection.HTTP_OK.toLong(), response.code.toLong())
-        Assert.assertEquals("OkReplay", response.header(Util.VIA))
-        Assert.assertEquals("REC", response.header(Headers.X_OKREPLAY))
+        Assert.assertEquals(VIA_HEADER, response.header(Util.VIA))
+        Assert.assertEquals(HEADER_REC.headerName, response.header(Headers.X_OKREPLAY))
     }
 
     @Test
@@ -68,8 +71,8 @@ class AnnotationTest {
         val request: Request = Request.Builder().url(endpoint.url("/")).build()
         val response = client.newCall(request).execute()
         Assert.assertEquals(HttpURLConnection.HTTP_OK.toLong(), response.code.toLong())
-        Assert.assertEquals("OkReplay", response.header(Util.VIA))
-        Assert.assertEquals("PLAY", response.header(Headers.X_OKREPLAY))
+        Assert.assertEquals(VIA_HEADER, response.header(Util.VIA))
+        Assert.assertEquals(HEADER_PLAY.headerName, response.header(Headers.X_OKREPLAY))
     }
 
     @Test
@@ -84,8 +87,8 @@ class AnnotationTest {
     }
 
     companion object {
-        var tapeRoot: File = Files.createTempDir()
-        var endpoint = MockWebServer()
+        private var tapeRoot: File = Files.createTempDir()
+        private var endpoint = MockWebServer()
 
         @BeforeClass
         @Throws(IOException::class)

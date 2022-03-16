@@ -8,7 +8,6 @@ import com.google.common.net.MediaType.FORM_DATA
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okreplay.TapeMode.READ_ONLY
@@ -20,8 +19,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.time.Duration
-import java.util.concurrent.TimeUnit
 
 class TapeSpecTest {
 
@@ -37,7 +34,7 @@ class TapeSpecTest {
         .code(200)
         .addHeader(CONTENT_LANGUAGE, "en-GB")
         .addHeader(CONTENT_ENCODING, "gzip")
-        .body("O HAI!".toResponseBody("text/plain;charset=UTF-8".toMediaTypeOrNull()))
+        .body(RESPONSE_BODY.toResponseBody("text/plain;charset=UTF-8".toMediaTypeOrNull()))
         .build()
 
     @After
@@ -68,7 +65,7 @@ class TapeSpecTest {
 
         // the response data is correctly stored
         assertEquals(interaction.response.code(), plainTextResponse.code())
-        assertEquals(interaction.response.body(), "O HAI!")
+        assertEquals(interaction.response.body(), RESPONSE_BODY)
         assertEquals(interaction.response.header(CONTENT_TYPE), plainTextResponse.header(CONTENT_TYPE))
         assertEquals(interaction.response.header(CONTENT_LANGUAGE), plainTextResponse.header(CONTENT_LANGUAGE))
         assertEquals(interaction.response.header(CONTENT_ENCODING), plainTextResponse.header(CONTENT_ENCODING))
@@ -118,7 +115,7 @@ class TapeSpecTest {
 
         // the recorded response data is copied onto the response
         assertEquals(response.code(), plainTextResponse.code())
-        assertEquals(response.bodyAsText(), "O HAI!")
+        assertEquals(response.bodyAsText(), RESPONSE_BODY)
         assertEquals(response.headers().toMultimap(), plainTextResponse.headers().toMultimap())
     }
 
@@ -157,5 +154,9 @@ class TapeSpecTest {
         }
 
         assertEquals(exception.message, "the tape is not writable")
+    }
+
+    companion object {
+        private const val RESPONSE_BODY = "O HAI!"
     }
 }

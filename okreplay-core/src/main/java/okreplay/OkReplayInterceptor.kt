@@ -1,16 +1,14 @@
 package okreplay
 
-import java.io.IOException
-import java.util.logging.Logger
-
 import okhttp3.Interceptor
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
-
+import okreplay.Headers.XHeader.HEADER_PLAY
+import okreplay.Headers.XHeader.HEADER_REC
 import okreplay.Util.VIA
+import java.io.IOException
+import java.util.logging.Logger
 
 class OkReplayInterceptor : Interceptor {
   private var configuration: OkReplayConfig? = null
@@ -56,7 +54,7 @@ class OkReplayInterceptor : Interceptor {
         recordedRequest.method(), recordedRequest.url().toString(), tape.name))
     val recordedResponse = tape.play(recordedRequest)
     var okhttpResponse = OkHttpResponseAdapter.adapt(request, recordedResponse)
-    okhttpResponse = setOkReplayHeader(okhttpResponse, "PLAY")
+    okhttpResponse = setOkReplayHeader(okhttpResponse, HEADER_PLAY.headerName)
     okhttpResponse = setViaHeader(okhttpResponse)
     return okhttpResponse
   }
@@ -68,7 +66,7 @@ class OkReplayInterceptor : Interceptor {
       okhttpResponse: okhttp3.Response
   ): okhttp3.Response {
     var okhttpResponse = okhttpResponse
-    okhttpResponse = setOkReplayHeader(okhttpResponse, "REC")
+    okhttpResponse = setOkReplayHeader(okhttpResponse, HEADER_REC.headerName)
     okhttpResponse = setViaHeader(okhttpResponse)
     LOG.info("Recording request ${request.method} ${request.url} to tape '${tape.name}'")
     val bodyClone = OkHttpResponseAdapter.cloneResponseBody(okhttpResponse.body!!)
