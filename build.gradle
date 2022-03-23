@@ -18,6 +18,25 @@ subprojects {
       classpath dep.kotlinPlugin
       classpath dep.gradleMavenPublishPlugin
     }
+
+    plugins.withId("com.vanniktech.maven.publish") {
+      publishing {
+        mavenPublish {
+          sonatypeHost = null
+        }
+        repositories {
+          maven {
+            def baseUrl = System.getenv()["ARTIFACTORY_URL"]
+            def snapshotsRepoUrl = "${baseUrl}/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : baseUrl
+            credentials {
+              username = System.getenv()["BUILDKITE_ARTIFACTORY_USER"]
+              password = System.getenv()["BUILDKITE_ARTIFACTORY_PASSWORD"]
+            }
+          }
+        }
+      }
+    }
   }
 
   allprojects {
